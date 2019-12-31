@@ -110,7 +110,7 @@ class Solver:
         if self.finalStateAchieved:
             return
         if node.isWinningState():
-            print('Winning state achieved.');
+            print('Winning state achieved.')
             self.showPath(node)
             self.finalStateAchieved = True
         else:
