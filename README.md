@@ -1,5 +1,5 @@
 # Peg-Solitaire-Solver
-A peg solitaire solver made in Python 3.6.
+A peg solitaire solver bot made in Python 3.6 working with [Peg Solitaire](https://www.coolmathgames.com/0-peg-solitaire).
 
 It uses the [DFS](https://en.wikipedia.org/wiki/Depth-first_search) search algorithm to achieve the puzzle's final state.
 
