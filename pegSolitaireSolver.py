@@ -1,13 +1,19 @@
+import pyautogui
+
 class Node:
-    def __init__(self,matrix,parent):
+    def __init__(self,matrix,parent,move):
         self.matrix = matrix
         self.parent = parent
+        self.move = move
 
     def getMatrix(self):
         return self.matrix
 
     def getParent(self):
         return self.parent
+
+    def getMove(self):
+        return self.move
 
     def showMatrix(self):
         print("\n".join("".join(elem) for elem in self.matrix))
@@ -31,25 +37,29 @@ class Node:
             newMatrix = [[self.matrix[i][j] for j in range(length)] for i in range(length)]
             newMatrix[x][y], newMatrix[x][y-2] = newMatrix[x][y-2], newMatrix[x][y]
             newMatrix[x][y-1] = 'O'
-            node = Node(newMatrix, self)
+            move = [[x,y],[x,y-2]]
+            node = Node(newMatrix, self, move)
             validPositionNodes.append(node)
         if self.isValidMove(x+2,y) and self.matrix[x+1][y] == 'X':
             newMatrix = [[self.matrix[i][j] for j in range(length)] for i in range(length)]
             newMatrix[x][y], newMatrix[x+2][y] = newMatrix[x+2][y], newMatrix[x][y]
             newMatrix[x+1][y] = 'O'
-            node = Node(newMatrix, self)
+            move = [[x,y],[x+2,y]]
+            node = Node(newMatrix, self, move)
             validPositionNodes.append(node)
         if self.isValidMove(x,y+2) and self.matrix[x][y+1] == 'X':
             newMatrix = [[self.matrix[i][j] for j in range(length)] for i in range(length)]
             newMatrix[x][y], newMatrix[x][y+2] = newMatrix[x][y+2], newMatrix[x][y]
             newMatrix[x][y+1] = 'O'
-            node = Node(newMatrix, self)
+            move = [[x,y],[x,y+2]]
+            node = Node(newMatrix, self, move)
             validPositionNodes.append(node)
         if self.isValidMove(x-2,y) and self.matrix[x-1][y] == 'X':
             newMatrix = [[self.matrix[i][j] for j in range(length)] for i in range(length)]
             newMatrix[x][y], newMatrix[x-2][y] = newMatrix[x-2][y], newMatrix[x][y]
             newMatrix[x-1][y] = 'O'
-            node = Node(newMatrix, self)
+            move = [[x,y],[x-2,y]]
+            node = Node(newMatrix, self, move)
             validPositionNodes.append(node)
         return validPositionNodes
 
@@ -85,8 +95,9 @@ class Solver:
     def __init__(self):
         matrixHelper = MatrixHelper()
         self.matrix = matrixHelper.createMatrix()
-        self.startNode = Node(self.matrix, None)
+        self.startNode = Node(self.matrix, None, None)
         self.finalStateAchieved = False
+        self.moves = []
 
     def showPath(self, endNode):
         path = []
@@ -101,10 +112,14 @@ class Solver:
         print('Total moves: ' + str(len(path)), end='\n\n')
         counter = 1
         for node in path:
+            self.moves.append(node.getMove())
             print('Step ' + str(counter) + ' :')
             node.showMatrix()
             print()
             counter += 1
+    
+    def getMoves(self):
+        return self.moves
 
     def dfs(self, node):
         if self.finalStateAchieved:
@@ -122,5 +137,21 @@ class Solver:
     def solve(self):
         self.dfs(self.startNode)
 
-solver = Solver()
-solver.solve()
+class Bot:
+    def solvePegSolitaire(self): 
+        startX = 650
+        startY = 370
+        distance = 65
+
+        solver = Solver()
+        solver.solve()
+        moves = solver.getMoves()
+
+        pyautogui.click(startX, startY)
+        for move in moves:
+            pyautogui.click(startX + move[0][0] * distance, startY + move[0][1] * distance)
+            pyautogui.dragTo(startX + move[1][0] * distance, startY + move[1][1] * distance, 0.5, button='left')
+
+if __name__ == "__main__":
+    bot = Bot()
+    bot.solvePegSolitaire()
